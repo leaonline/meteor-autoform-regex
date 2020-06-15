@@ -19,7 +19,7 @@ Package.onUse(function (api) {
     'ejson',
     'reactive-dict',
     'aldeed:autoform',
-    'jkuester:ejson-regexp'
+    'leaonline:ejson-regexp'
   ], 'client')
   api.mainModule('autoform-regex.js', 'client')
 })
