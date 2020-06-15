@@ -37,5 +37,3 @@ configurations here:
   name: 'regexp' // to be used as type for the field
 }
 ```
-
-
