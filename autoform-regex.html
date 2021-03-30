@@ -1,9 +1,29 @@
 <template name="afRegExp">
 
     <div class="d-flex align-items-baseline">
-        <span>/</span>
-        <input type="text" class="afRegExp-pattern-input form-control">
-        <span>/</span>
+        <input type="text" class="afRegExp-pattern-input form-control text-monospace">
+    </div>
+
+    {{!-- OPTIONAL --}}
+
+    <div class="d-flex mt-2">
+        <div class="custom-control custom-switch">
+            <input type="checkbox"
+                   class="custom-control-input custom-check"
+                   data-target="isExactMatch"
+                   id="fullPattern-{{dataSchemaKey}}"
+                   selected="{{#if isExactMatch}}selected{{/if}}">
+            <label class="custom-control-label" for="fullPattern-{{dataSchemaKey}}">{{fullPatternLabel}}</label>
+        </div>
+
+        <div class="custom-control custom-switch ml-3">
+            <input type="checkbox"
+                   class="custom-control-input custom-check"
+                   data-target="ignoreCase"
+                   id="ignoreCase-{{dataSchemaKey}}"
+                   selected="{{#if ignoreCase}}selected{{/if}}">
+            <label class="custom-control-label" for="ignoreCase-{{dataSchemaKey}}">{{ignoreCaseLabel}}</label>
+        </div>
     </div>
 
     {{!-- ERRORS, VALIDATION ETC, --}}
