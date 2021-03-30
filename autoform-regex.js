@@ -8,7 +8,8 @@ AutoForm.addInputType('regexp', {
   template: 'afRegExp',
   valueOut () {
     const value = this.val()
-    return typeof value === 'string' && EJSON.parse(value)
+    console.info(value)
+    return typeof value === 'string' && value.length > 0 && EJSON.parse(value)
   }
 })
 
@@ -31,7 +32,7 @@ Template.afRegExp.onCreated(function () {
 Template.afRegExp.onRendered(function () {
   const instance = this
   const { value } = instance.data
-  const { source } = value
+  const source = value?.source
 
   let cleanedValue = source
   let isExactMatch = false
@@ -42,14 +43,16 @@ Template.afRegExp.onRendered(function () {
     isExactMatch = true
   }
 
-  if (value.flags && value.flags.includes('i')) {
+  if (value?.flags && value.flags.includes('i')) {
     ignoreCase = true
   }
 
   instance.state.set({ isExactMatch, ignoreCase })
 
-  instance.$('.afRegExp-pattern-input').val(cleanedValue)
-  updateValue(value, instance)
+  if (cleanedValue) {
+    instance.$('.afRegExp-pattern-input').val(cleanedValue)
+    updateValue(value, instance)
+  }
 })
 
 Template.afRegExp.helpers({
@@ -83,9 +86,9 @@ Template.afRegExp.events({
       updateValue(regExp, templateInstance)
       AutoForm.removeStickyValidationError(formId, dataSchemaKey)
     } catch (e) {
-      templateInstance.state.set('invalid', e)
       console.error(e)
-      AutoForm.addStickyValidationError(formId, dataSchemaKey, 'error', 'invalid exprtession')
+      templateInstance.state.set('invalid', e)
+      AutoForm.addStickyValidationError(formId, dataSchemaKey, 'error', 'invalid expression')
     }
   },
   'click .custom-check' (event, templateInstance) {
@@ -112,9 +115,13 @@ function updateValue (regExp, templateInstance) {
     regExp = new RegExp(`^${regExp.source}$`, regExp.flags)
   }
 
-  const str = EJSON.stringify(regExp)
-  console.info(str)
-  templateInstance.$('.afRegExpHiddenInput').val(str)
+  if (regExp.source.length > 0 && regExp.source !== '(?:)') {
+    console.info(regExp.source)
+    const str = EJSON.stringify(regExp)
+    templateInstance.$('.afRegExpHiddenInput').val(str)
+  } else {
+    templateInstance.$('.afRegExpHiddenInput').val(null)
+  }
 }
 
 export const AutoFormRegexp = {
