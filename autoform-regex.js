@@ -8,7 +8,6 @@ AutoForm.addInputType('regexp', {
   template: 'afRegExp',
   valueOut () {
     const value = this.val()
-    console.info(value)
     return typeof value === 'string' && value.length > 0 && EJSON.parse(value)
   }
 })
@@ -116,7 +115,6 @@ function updateValue (regExp, templateInstance) {
   }
 
   if (regExp.source.length > 0 && regExp.source !== '(?:)') {
-    console.info(regExp.source)
     const str = EJSON.stringify(regExp)
     templateInstance.$('.afRegExpHiddenInput').val(str)
   } else {
