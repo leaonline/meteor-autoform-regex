@@ -1,3 +1,4 @@
+/* eslint-env meteor */
 Package.describe({
   name: 'jkuester:autoform-regexp',
   version: '1.0.0',
@@ -22,11 +23,4 @@ Package.onUse(function (api) {
     'leaonline:ejson-regexp'
   ], 'client')
   api.mainModule('autoform-regex.js', 'client')
-})
-
-Package.onTest(function (api) {
-  api.use('ecmascript')
-  api.use('tinytest')
-  api.use('jkuester:autoform-regex')
-  api.mainModule('autoform-regex-tests.js')
 })

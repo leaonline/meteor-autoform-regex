@@ -1,9 +1,7 @@
 /* global AutoForm RegExp */
 import { Template } from 'meteor/templating'
-import { Tracker } from 'meteor/tracker'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { EJSON } from 'meteor/ejson'
-import SimpleSchema from 'simpl-schema'
 import './autoform-regex.html'
 
 AutoForm.addInputType('regexp', {
@@ -13,8 +11,6 @@ AutoForm.addInputType('regexp', {
     return typeof value === 'string' && EJSON.parse(value)
   }
 })
-
-const createSchema = (obj) => new SimpleSchema(obj, { tracker: Tracker })
 
 Template.afRegExp.onCreated(function () {
   const instance = this
@@ -108,9 +104,7 @@ function updateValue (regExp, templateInstance) {
 
   if (ignoreCase) {
     regExp = new RegExp(regExp.source, regExp.flags + 'i')
-  }
-
-  else {
+  } else {
     regExp = new RegExp(regExp.source, '')
   }
 
