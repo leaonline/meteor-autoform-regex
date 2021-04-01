@@ -15,7 +15,7 @@ $ meteor add jkuester:autoform-regexp
 This package uses a Bootstrap 4 theme, which is supported by the following packages:
 
 - for AutoForm <=6.3.0 use `imajus:autoform-bootstrap4`
-- for AutoForm >=7.0.0 use `jkuester:autoform-bootstrap4`
+- for AutoForm >=7.0.0 use `communitypackages:autoform-bootstrap4`
 
 However, the theme **is optional** and the package will work also without a BS4 theme.
 
