@@ -15,13 +15,13 @@ describe(updateValue.name, function () {
       }
     }
     const input = {
-      val(str) {
+      val (str) {
         if (str) expect(str).to.equal(data.value)
       }
     }
     updateValue({ input, hidden, ...data })
   })
   it('bubbles up any errors on invalid regEx pattern', function () {
-    expect(() => updateValue({ value: '(('})).to.throw('unterminated parenthetical')
+    expect(() => updateValue({ value: '((' })).to.throw('unterminated parenthetical')
   })
 })

@@ -17,7 +17,7 @@ describe(valueOut.name, function () {
     expect(valueOut()).to.equal(undefined)
     expect(valueOut(null)).to.equal(undefined)
     expect(valueOut('')).to.equal(undefined)
-    expect(valueOut(JSON.stringify({ value: '(('}))).to.equal(undefined)
+    expect(valueOut(JSON.stringify({ value: '((' }))).to.equal(undefined)
     expect(valueOut('{ value }')).to.equal(undefined)
   })
 })

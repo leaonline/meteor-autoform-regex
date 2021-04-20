@@ -1,14 +1,18 @@
 /* global AutoForm RegExp */
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
-import { EJSON } from 'meteor/ejson'
+import { fromRegExp } from './lib/fromRegExp'
+import { updateValue } from './lib/updateValue'
+import { valueOut } from './lib/valueOut'
 import './autoform-regex.html'
+
+const input = instance => instance.$('.afRegExp-pattern-input')
+const hidden = instance => instance.$('.afRegExpHiddenInput')
 
 AutoForm.addInputType('regexp', {
   template: 'afRegExp',
   valueOut () {
-    const value = this.val()
-    return typeof value === 'string' && value.length > 0 && EJSON.parse(value)
+    return valueOut(this.val())
   }
 })
 
@@ -30,27 +34,29 @@ Template.afRegExp.onCreated(function () {
 
 Template.afRegExp.onRendered(function () {
   const instance = this
-  const { value } = instance.data
-  const source = value?.source
 
-  let cleanedValue = source
-  let isExactMatch = false
-  let ignoreCase = false
+  if (instance.data.value instanceof RegExp) {
+    try {
+      const { ignoreCase, isExactMatch, value } = fromRegExp(instance.data.value)
+      updateValue({
+        value: value,
+        input: input(instance),
+        hidden: hidden(instance),
+        ignoreCase,
+        isExactMatch
+      })
 
-  if (source && source.startsWith('^') && source.endsWith('$')) {
-    cleanedValue = source.substring(1, source.length - 1)
-    isExactMatch = true
-  }
+      if (ignoreCase) {
+        instance.$('.afRegExpIgnoreCase').prop('checked', 'checked')
+      }
+      if (isExactMatch) {
+        instance.$('.afRegExpIsExactMatch').prop('checked', 'checked')
+      }
 
-  if (value?.flags && value.flags.includes('i')) {
-    ignoreCase = true
-  }
-
-  instance.state.set({ isExactMatch, ignoreCase })
-
-  if (cleanedValue) {
-    instance.$('.afRegExp-pattern-input').val(cleanedValue)
-    updateValue(value, instance)
+      instance.state.set({ isExactMatch, ignoreCase })
+    } catch (e) {
+      console.error(e)
+    }
   }
 })
 
@@ -67,11 +73,8 @@ Template.afRegExp.helpers({
   ignoreCaseLabel () {
     return Template.instance().state.get('ignoreCaseLabel')
   },
-  isExactMatch () {
-    return Template.instance().state.get('isExactMatch')
-  },
-  ignoreCase () {
-    return Template.instance().state.get('ignoreCase')
+  selected (type) {
+    return Template.instance().state.get(type)
   }
 })
 
@@ -79,10 +82,15 @@ Template.afRegExp.events({
   'input .afRegExp-pattern-input' (event, templateInstance) {
     const dataSchemaKey = templateInstance.state.get('dataSchemaKey')
     const formId = AutoForm.getFormId()
+
     try {
-      const pattern = templateInstance.$(event.currentTarget).val()
-      const regExp = new RegExp(pattern)
-      updateValue(regExp, templateInstance)
+      updateValue({
+        value: templateInstance.$(event.currentTarget).val(),
+        isExactMatch: templateInstance.state.get('isExactMatch'),
+        ignoreCase: templateInstance.state.get('ignoreCase'),
+        input: input(templateInstance),
+        hidden: hidden(templateInstance)
+      })
       AutoForm.removeStickyValidationError(formId, dataSchemaKey)
     } catch (e) {
       console.error(e)
@@ -95,32 +103,16 @@ Template.afRegExp.events({
     const flag = templateInstance.state.get(target)
     templateInstance.state.set(target, !flag)
 
-    const currentValue = new RegExp(templateInstance.$('.afRegExp-pattern-input').val())
-    updateValue(currentValue, templateInstance)
+    const $input = templateInstance.$('.afRegExp-pattern-input')
+    updateValue({
+      value: $input.val(),
+      isExactMatch: templateInstance.state.get('isExactMatch'),
+      ignoreCase: templateInstance.state.get('ignoreCase'),
+      input: input(templateInstance),
+      hidden: hidden(templateInstance)
+    })
   }
 })
-
-function updateValue (regExp, templateInstance) {
-  const ignoreCase = templateInstance.state.get('ignoreCase')
-  const isExactMatch = templateInstance.state.get('isExactMatch')
-
-  if (ignoreCase) {
-    regExp = new RegExp(regExp.source, regExp.flags + 'i')
-  } else {
-    regExp = new RegExp(regExp.source, '')
-  }
-
-  if (isExactMatch) {
-    regExp = new RegExp(`^${regExp.source}$`, regExp.flags)
-  }
-
-  if (regExp.source.length > 0 && regExp.source !== '(?:)') {
-    const str = EJSON.stringify(regExp)
-    templateInstance.$('.afRegExpHiddenInput').val(str)
-  } else {
-    templateInstance.$('.afRegExpHiddenInput').val(null)
-  }
-}
 
 export const AutoFormRegexp = {
   name: 'regexp'
