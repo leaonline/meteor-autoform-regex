@@ -37,3 +37,15 @@ configurations here:
   name: 'regexp' // to be used as type for the field
 }
 ```
+
+## Run the Tests
+
+```bash
+$ TEST_WATCH=1 TEST_SERVER=0 meteor test-packages ./ --driver-package meteortesting:mocha
+```
+
+Then open your browser and navigate to localhost:3000 to see the tests running.
+
+## License
+
+MIT, see [LICENSE file](./LICENSE)
