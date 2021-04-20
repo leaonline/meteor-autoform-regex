@@ -1,7 +1,7 @@
 /* eslint-env meteor */
 Package.describe({
   name: 'leaonline:autoform-regexp',
-  version: '1.0.0',
+  version: '1.1.0',
   // Brief, one-line summary of the package.
   summary: 'Allows RegExp as AutoForm input.',
   // URL to the Git repository containing the source code for this package.
@@ -23,4 +23,17 @@ Package.onUse(function (api) {
     'leaonline:ejson-regexp@1.1.0'
   ], 'client')
   api.mainModule('autoform-regex.js', 'client')
+})
+
+Package.onTest(function (api) {
+  Npm.depends({
+    chai: '4.2.0'
+  })
+
+  api.use('ecmascript')
+  api.use('mongo')
+  api.use('random')
+  api.use('meteortesting:mocha')
+  api.use('leaonline:autoform-regexp')
+  api.mainModule('autoform-regex-tests.js')
 })
